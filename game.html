@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FRONTLINE – Game</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=Rajdhani:wght@500;600;700&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    overflow: hidden;
+    background: #080b10;
+    color: white;
+    font-family: 'Rajdhani', sans-serif;
+}
+
+canvas {
+    display: block;
+}
+
+/* HUD */
+
+#hud {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    display: none;
+}
+
+.top-left {
+    position: absolute;
+    top: 25px;
+    left: 30px;
+}
+
+.logo {
+    font-family: 'Barlow Condensed';
+    font-size: 35px;
+    font-weight: 900;
+    letter-spacing: 3px;
+}
+
+.logo span {
+    color: #ff542e;
+}
+
+#playerCount {
+    margin-top: 5px;
+    font-size: 17px;
+    letter-spacing: 2px;
+    color: #c3c9d1;
+}
+
+#crosshair {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 14px;
+    height: 14px;
+    transform: translate(-50%, -50%);
+}
+
+#crosshair::before,
+#crosshair::after {
+    content: "";
+    position: absolute;
+    background: white;
+}
+
+#crosshair::before {
+    width: 2px;
+    height: 14px;
+    left: 6px;
+}
+
+#crosshair::after {
+    height: 2px;
+    width: 14px;
+    top: 6px;
+}
+
+#bottomHud {
+    position: absolute;
+    bottom: 30px;
+    left: 30px;
+}
+
+#health {
+    font-family: 'Barlow Condensed';
+    font-size: 35px;
+    font-weight: 900;
+}
+
+#weaponName {
+    color: #ff542e;
+    font-size: 17px;
+    letter-spacing: 2px;
+}
+
+/* LOBBY */
+
+#lobby {
+    position: fixed;
+    inset: 0;
+    z-index: 10;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background:
+        linear-gradient(120deg, rgba(5,8,13,.97), rgba(5,8,13,.78)),
+        url("https://images.unsplash.com/photo-1519608487953-e999c86e7455?auto=format&fit=crop&w=2000&q=85")
+        center/cover;
+}
+
+.lobby-content {
+    width: min(650px, 90%);
+    text-align: center;
+}
+
+.lobby-logo {
+    font-family: 'Barlow Condensed';
+    font-size: clamp(65px, 12vw, 110px);
+    font-weight: 900;
+    line-height: .9;
+    letter-spacing: 2px;
+}
+
+.lobby-logo span {
+    color: #ff542e;
+}
+
+.subtitle {
+    margin-top: 22px;
+    font-size: 16px;
+    letter-spacing: 5px;
+    color: #aab2bd;
+}
+
+.status-panel {
+    margin: 45px auto 0;
+    max-width: 420px;
+    padding: 28px;
+    background: rgba(14,19,27,.9);
+    border: 1px solid rgba(255,255,255,.12);
+    border-top: 3px solid #ff542e;
+}
+
+.status-label {
+    color: #929ba7;
+    font-size: 15px;
+    letter-spacing: 3px;
+}
+
+#countdown {
+    font-family: 'Barlow Condensed';
+    font-size: 90px;
+    font-weight: 900;
+    margin: 8px 0;
+}
+
+#countdown span {
+    color: #ff542e;
+}
+
+#lobbyPlayers {
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: 2px;
+}
+
+#lobbyMessage {
+    margin-top: 15px;
+    color: #aab2bd;
+    font-size: 16px;
+}
+
+.progress {
+    height: 5px;
+    background: #292f38;
+    margin-top: 25px;
+    overflow: hidden;
+}
+
+#progressBar {
+    height: 100%;
+    width: 0%;
+    background: #ff542e;
+    transition: width .3s;
+}
+
+#connectionStatus {
+    margin-top: 25px;
+    color: #ffb09d;
+    font-size: 14px;
+    letter-spacing: 2px;
+}
+
+/* START */
+
+#startScreen {
+    position: fixed;
+    inset: 0;
+    z-index: 20;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #080b10;
+}
+
+.start-button {
+    padding: 20px 65px;
+    background: #ff542e;
+    border: none;
+    color: white;
+    font-family: 'Barlow Condensed';
+    font-size: 32px;
+    font-weight: 900;
+    letter-spacing: 4px;
+    cursor: pointer;
+    clip-path: polygon(0 0, 90% 0, 100% 25%, 100% 100%, 10% 100%, 0 75%);
+}
+
+.start-button:hover {
+    background: #ff7658;
+}
+
+#lockMessage {
+    margin-top: 20px;
+    color: #9ca5b1;
+    font-size: 14px;
+}
+
+/* MOBILE */
+
+@media(max-width: 600px) {
+    .status-panel {
+        padding: 20px;
+    }
+
+    #countdown {
+        font-size: 75px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<!-- START SCREEN -->
+
+<div id="startScreen">
+    <div style="text-align:center">
+        <div class="lobby-logo">
+            FRONT<span>LINE</span>
+        </div>
+
+        <div class="subtitle">BATTLE ROYALE</div>
+
+        <br><br>
+
+        <button class="start-button" onclick="joinLobby()">
+            LOBBY BETRETEN
+        </button>
+
+        <div id="lockMessage">
+            Verbinde dich mit dem FRONTLINE-Server.
+        </div>
+    </div>
+</div>
+
+<!-- MATCHMAKING LOBBY -->
+
+<div id="lobby" style="display:none">
+
+    <div class="lobby-content">
+
+        <div class="lobby-logo">
+            FRONT<span>LINE</span>
+        </div>
+
+        <div class="subtitle">
+            MATCHMAKING
+        </div>
+
+        <div class="status-panel">
+
+            <div class="status-label">
+                SPIELSTART IN
+            </div>
+
+            <div id="countdown">
+                <span>10</span>
+            </div>
+
+            <div id="lobbyPlayers">
+                1 / 32 SPIELER
+            </div>
+
+            <div id="lobbyMessage">
+                Suche weitere Spieler ...
+            </div>
+
+            <div class="progress">
+                <div id="progressBar"></div>
+            </div>
+
+            <div id="connectionStatus">
+                VERBUNDEN
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- GAME HUD -->
+
+<div id="hud">
+
+    <div class="top-left">
+
+        <div class="logo">
+            FRONT<span>LINE</span>
+        </div>
+
+        <div id="playerCount">
+            32 SPIELER
+        </div>
+
+    </div>
+
+    <div id="crosshair"></div>
+
+    <div id="bottomHud">
+        <div id="health">100 HP</div>
+        <div id="weaponName">STURMBLASTER</div>
+    </div>
+
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+
+<script type="module">
+
+import * as THREE from
+"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js";
+
+/* =====================================
+   GRUNDEINSTELLUNGEN
+===================================== */
+
+const socket = typeof io !== "undefined" ? io() : null;
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x87b9d8);
+scene.fog = new THREE.Fog(0x87b9d8, 80, 220);
+
+const camera = new THREE.PerspectiveCamera(
+    75,
+    window.innerWidth / window.innerHeight,
+    0.1,
+    500
+);
+
+camera.position.set(0, 2, 10);
+
+const renderer = new THREE.WebGLRenderer({
+    antialias: true
+});
+
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+
+document.body.appendChild(renderer.domElement);
+
+renderer.domElement.style.position = "fixed";
+renderer.domElement.style.inset = "0";
+renderer.domElement.style.zIndex = "0";
+
+/* LICHT */
+
+scene.add(new THREE.HemisphereLight(
+    0xffffff,
+    0x596b43,
+    2
+));
+
+const sunlight = new THREE.DirectionalLight(0xffffff, 2.5);
+sunlight.position.set(40, 80, 30);
+sunlight.castShadow = true;
+scene.add(sunlight);
+
+/* =====================================
+   MATERIALIEN
+===================================== */
+
+const materials = {
+    grass: new THREE.MeshStandardMaterial({ color: 0x568b45 }),
+    sand: new THREE.MeshStandardMaterial({ color: 0xcbb77b }),
+    wood: new THREE.MeshStandardMaterial({ color: 0x806044 }),
+    wall: new THREE.MeshStandardMaterial({ color: 0xb6b3a8 }),
+    roof: new THREE.MeshStandardMaterial({ color: 0x514c48 }),
+    window: new THREE.MeshStandardMaterial({
+        color: 0x75b9d4,
+        roughness: 0.25
+    }),
+    player: new THREE.MeshStandardMaterial({ color: 0x2878d0 }),
+    enemy: new THREE.MeshStandardMaterial({ color: 0xc83c2b })
+};
+
+/* =====================================
+   INSEL
+===================================== */
+
+const island = new THREE.Group();
+scene.add(island);
+
+// Hauptinsel
+const islandBase = new THREE.Mesh(
+    new THREE.CylinderGeometry(48, 42, 9, 12),
+    materials.sand
+);
+
+islandBase.position.y = -5;
+islandBase.receiveShadow = true;
+island.add(islandBase);
+
+// Grasfläche
+const ground = new THREE.Mesh(
+    new THREE.CylinderGeometry(44, 44, 1.2, 12),
+    materials.grass
+);
+
+ground.position.y = -0.2;
+ground.receiveShadow = true;
+island.add(ground);
+
+// Strandstücke
+for (let i = 0; i < 12; i++) {
+    const angle = i / 12 * Math.PI * 2;
+
+    const rock = new THREE.Mesh(
+        new THREE.BoxGeometry(8, 2, 5),
+        materials.sand
+    );
+
+    rock.position.set(
+        Math.cos(angle) * 39,
+        -0.5,
+        Math.sin(angle) * 39
+    );
+
+    rock.rotation.y = angle;
+    island.add(rock);
+}
+
+/* =====================================
+   HÄUSER AUS BLÖCKEN
+===================================== */
+
+function createHouse(x, z, scale = 1) {
+
+    const house = new THREE.Group();
+
+    function block(w, h, d, material, px, py, pz) {
+        const mesh = new THREE.Mesh(
+            new THREE.BoxGeometry(w, h, d),
+            material
+        );
+
+        mesh.position.set(px, py, pz);
+        mesh.castShadow = true;
+        mesh.receiveShadow = true;
+
+        house.add(mesh);
+
+        return mesh;
+    }
+
+    // Boden
+    block(10, 0.5, 9, materials.wood, 0, 0.25, 0);
+
+    // Rückwand
+    block(10, 5, 0.5, materials.wall, 0, 2.75, -4.5);
+
+    // Seitenwände
+    block(0.5, 5, 9, materials.wall, -4.75, 2.75, 0);
+    block(0.5, 5, 9, materials.wall, 4.75, 2.75, 0);
+
+    // Vorderwand mit Türöffnung
+    block(3.3, 5, 0.5, materials.wall, -3.35, 2.75, 4.5);
+    block(3.3, 5, 0.5, materials.wall, 3.35, 2.75, 4.5);
+    block(3.4, 1.5, 0.5, materials.wall, 0, 4.5, 4.5);
+
+    // Dach
+    block(11, 0.7, 10, materials.roof, 0, 5.5, 0);
+
+    // Fenster
+    block(0.15, 1.5, 2, materials.window, -4.5, 2.8, -1);
+
+    house.position.set(x, 0, z);
+    house.scale.setScalar(scale);
+
+    island.add(house);
+}
+
+createHouse(-15, -12, 1);
+createHouse(14, -16, 0.85);
+createHouse(18, 12, 1);
+createHouse(-18, 15, 0.9);
+
+/* =====================================
+   BÄUME
+===================================== */
+
+const trunkMaterial = new THREE.MeshStandardMaterial({
+    color: 0x65442b
+});
+
+const leavesMaterial = new THREE.MeshStandardMaterial({
+    color: 0x285d35
+});
+
+for (let i = 0; i < 35; i++) {
+
+    const angle = Math.random() * Math.PI * 2;
+    const radius = 12 + Math.random() * 26;
+
+    const x = Math.cos(angle) * radius;
+    const z = Math.sin(angle) * radius;
+
+    const tree = new THREE.Group();
+
+    const trunk = new THREE.Mesh(
+        new THREE.BoxGeometry(0.8, 3, 0.8),
+        trunkMaterial
+    );
+
+    trunk.position.y = 1.5;
+    tree.add(trunk);
+
+    const leaves = new THREE.Mesh(
+        new THREE.BoxGeometry(3.5, 4, 3.5),
+        leavesMaterial
+    );
+
+    leaves.position.y = 4.5;
+    tree.add(leaves);
+
+    tree.position.set(x, 0, z);
+
+    island.add(tree);
+}
+
+/* =====================================
+   FIRST PERSON SPIELER
+===================================== */
+
+const player = {
+    id: null,
+    x: 0,
+    y: 1.7,
+    z: 8,
+    speed: 9,
+    health: 100,
+    yaw: 0,
+    pitch: 0
+};
+
+camera.position.set(player.x, player.y, player.z);
+
+let pointerLocked = false;
+
+const keys = {};
+
+document.addEventListener("keydown", e => {
+    keys[e.code] = true;
+});
+
+document.addEventListener("keyup", e => {
+    keys[e.code] = false;
+});
+
+renderer.domElement.addEventListener("click", () => {
+    if (gameStarted) {
+        renderer.domElement.requestPointerLock();
+    }
+});
+
+document.addEventListener("pointerlockchange", () => {
+    pointerLocked = document.pointerLockElement === renderer.domElement;
+});
+
+document.addEventListener("mousemove", e => {
+
+    if (!pointerLocked) return;
+
+    player.yaw -= e.movementX * 0.002;
+    player.pitch -= e.movementY * 0.002;
+
+    player.pitch = Math.max(
+        -1.4,
+        Math.min(1.4, player.pitch)
+    );
+});
+
+/* =====================================
+   ANDERE SPIELER ALS BLOCKFIGUREN
+===================================== */
+
+const remotePlayers = new Map();
+
+function createBlockPlayer(id, isBot = false) {
+
+    const group = new THREE.Group();
+
+    const bodyMaterial = isBot
+        ? materials.enemy
+        : materials.player;
+
+    function part(w, h, d, x, y, z, material) {
+
+        const mesh = new THREE.Mesh(
+            new THREE.BoxGeometry(w, h, d),
+            material
+        );
+
+        mesh.position.set(x, y, z);
+        mesh.castShadow = true;
+
+        group.add(mesh);
+
+        return mesh;
+    }
+
+    const headMaterial = new THREE.MeshStandardMaterial({
+        color: 0xd8b18a
+    });
+
+    part(0.65, 0.7, 0.65, 0, 2.2, 0, headMaterial);
+    part(0.9, 1.1, 0.45, 0, 1.25, 0, bodyMaterial);
+
+    part(0.3, 1, 0.35, -0.65, 1.3, 0, bodyMaterial);
+    part(0.3, 1, 0.35, 0.65, 1.3, 0, bodyMaterial);
+
+    part(0.35, 1, 0.35, -0.25, 0.35, 0, bodyMaterial);
+    part(0.35, 1, 0.35, 0.25, 0.35, 0, bodyMaterial);
+
+    scene.add(group);
+
+    remotePlayers.set(id, {
+        group,
+        x: 0,
+        y: 0,
+        z: 0,
+        yaw: 0,
+        isBot
+    });
+
+    return group;
+}
+
+function updateRemotePlayer(data) {
+
+    let remote = remotePlayers.get(data.id);
+
+    if (!remote) {
+        createBlockPlayer(data.id, data.isBot);
+        remote = remotePlayers.get(data.id);
+    }
+
+    remote.x = data.x;
+    remote.y = data.y || 0;
+    remote.z = data.z;
+    remote.yaw = data.yaw || 0;
+}
+
+/* =====================================
+   MULTIPLAYER
+===================================== */
+
+let gameStarted = false;
+let lobbyJoined = false;
+let localCountdown = 10;
+let countdownTimer = null;
+
+let realPlayers = 1;
+let botCount = 0;
+
+const startScreen = document.getElementById("startScreen");
+const lobbyElement = document.getElementById("lobby");
+
+function updateLobbyDisplay() {
+
+    const total = Math.min(realPlayers + botCount, 32);
+
+    document.getElementById("lobbyPlayers").textContent =
+        total + " / 32 SPIELER";
+
+    document.getElementById("playerCount").textContent =
+        total + " SPIELER";
+
+    document.getElementById("progressBar").style.width =
+        (total / 32 * 100) + "%";
+}
+
+function joinLobby() {
+
+    if (lobbyJoined) return;
+
+    lobbyJoined = true;
+
+    startScreen.style.display = "none";
+    lobbyElement.style.display = "flex";
+
+    document.getElementById("connectionStatus").textContent =
+        socket ? "VERBINDE MIT SERVER ..." : "KEIN SERVER VERBUNDEN";
+
+    if (!socket) {
+        document.getElementById("lobbyMessage").textContent =
+            "Socket.IO konnte nicht geladen werden.";
+        return;
+    }
+
+    socket.emit("join-game");
+
+    socket.on("lobby-update", data => {
+
+        realPlayers = data.realPlayers;
+        botCount = data.botCount || 0;
+
+        localCountdown = data.countdown;
+
+        document.getElementById("countdown").innerHTML =
+            "<span>" + localCountdown + "</span>";
+
+        updateLobbyDisplay();
+
+        document.getElementById("connectionStatus").textContent =
+            "LIVE MIT SERVER VERBUNDEN";
+
+        document.getElementById("lobbyMessage").textContent =
+            data.message || "Warte auf Spielstart ...";
+    });
+
+    socket.on("game-start", data => {
+
+        realPlayers = data.realPlayers;
+        botCount = data.botCount;
+
+        updateLobbyDisplay();
+
+        startGame();
+    });
+
+    socket.on("player-moved", data => {
+        updateRemotePlayer(data);
+    });
+
+    socket.on("player-left", id => {
+
+        const remote = remotePlayers.get(id);
+
+        if (remote) {
+            scene.remove(remote.group);
+            remotePlayers.delete(id);
+        }
+    });
+
+    socket.on("players-existing", players => {
+
+        players.forEach(data => {
+            if (data.id !== socket.id) {
+                updateRemotePlayer(data);
+            }
+        });
+
+    });
+
+    socket.on("connect", () => {
+        player.id = socket.id;
+        document.getElementById("connectionStatus").textContent =
+            "VERBUNDEN";
+    });
+
+    socket.on("connect_error", () => {
+        document.getElementById("connectionStatus").textContent =
+            "VERBINDUNG FEHLGESCHLAGEN";
+    });
+}
+
+/* =====================================
+   SPIELSTART
+===================================== */
+
+function startGame() {
+
+    if (gameStarted) return;
+
+    gameStarted = true;
+
+    lobbyElement.style.display = "none";
+    document.getElementById("hud").style.display = "block";
+
+    camera.position.set(player.x, player.y, player.z);
+
+    document.getElementById("weaponName").textContent =
+        "STURMBLASTER";
+
+    renderer.domElement.requestPointerLock();
+}
+
+/* =====================================
+   BEWEGUNG
+===================================== */
+
+let lastNetworkUpdate = 0;
+
+function updatePlayer(delta) {
+
+    if (!gameStarted) return;
+
+    const forward = new THREE.Vector3(
+        -Math.sin(player.yaw),
+        0,
+        -Math.cos(player.yaw)
+    );
+
+    const right = new THREE.Vector3(
+        Math.cos(player.yaw),
+        0,
+        -Math.sin(player.yaw)
+    );
+
+    const move = new THREE.Vector3();
+
+    if (keys["KeyW"]) move.add(forward);
+    if (keys["KeyS"]) move.sub(forward);
+    if (keys["KeyD"]) move.add(right);
+    if (keys["KeyA"]) move.sub(right);
+
+    if (move.lengthSq() > 0) {
+
+        move.normalize();
+
+        player.x += move.x * player.speed * delta;
+        player.z += move.z * player.speed * delta;
+    }
+
+    // Inselgrenze
+    const maxDistance = 41;
+    const distance = Math.sqrt(
+        player.x * player.x + player.z * player.z
+    );
+
+    if (distance > maxDistance) {
+        player.x *= maxDistance / distance;
+        player.z *= maxDistance / distance;
+    }
+
+    camera.position.set(player.x, player.y, player.z);
+
+    camera.rotation.order = "YXZ";
+    camera.rotation.y = player.yaw;
+    camera.rotation.x = player.pitch;
+
+    // Position regelmäßig an Server übertragen
+    lastNetworkUpdate += delta;
+
+    if (socket && lastNetworkUpdate > 0.05) {
+
+        socket.emit("player-move", {
+            x: player.x,
+            y: player.y,
+            z: player.z,
+            yaw: player.yaw
+        });
+
+        lastNetworkUpdate = 0;
+    }
+}
+
+/* =====================================
+   ANIMATION
+===================================== */
+
+let previousTime = performance.now();
+
+function animate() {
+
+    requestAnimationFrame(animate);
+
+    const now = performance.now();
+    const delta = Math.min((now - previousTime) / 1000, 0.05);
+
+    previousTime = now;
+
+    updatePlayer(delta);
+
+    // Andere Spieler sanft bewegen
+    for (const remote of remotePlayers.values()) {
+
+        remote.group.position.set(
+            remote.x,
+            remote.y,
+            remote.z
+        );
+
+        remote.group.rotation.y = remote.yaw;
+    }
+
+    renderer.render(scene, camera);
+}
+
+animate();
+
+/* =====================================
+   FENSTERGRÖSSE
+===================================== */
+
+window.addEventListener("resize", () => {
+
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+
+    renderer.setSize(
+        window.innerWidth,
+        window.innerHeight
+    );
+});
+
+</script>
+
+</body>
+</html>
