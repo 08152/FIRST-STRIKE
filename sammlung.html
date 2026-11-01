@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FRONTLINE – Geister</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800;900&family=Rajdhani:wght@400;500;600;700&display=swap');
+
+:root {
+    --orange: #ff542e;
+    --dark: #090c12;
+    --panel: #151c26;
+    --muted: #929ba8;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    min-height: 100vh;
+    color: white;
+    font-family: 'Rajdhani', sans-serif;
+    background:
+        radial-gradient(ellipse at 75% 40%, #222e3c 0%, transparent 55%),
+        #090c12;
+}
+
+/* HEADER */
+
+header {
+    height: 78px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 5%;
+    background: #080b10;
+    border-bottom: 1px solid #ffffff18;
+}
+
+.logo {
+    font: 900 32px 'Barlow Condensed';
+    letter-spacing: 3px;
+}
+
+.logo span {
+    color: var(--orange);
+}
+
+nav {
+    height: 100%;
+    display: flex;
+    gap: 12px;
+}
+
+nav a {
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    color: #aab3be;
+    text-decoration: none;
+    font-weight: 700;
+    letter-spacing: 2px;
+}
+
+nav a:hover {
+    color: white;
+}
+
+main {
+    max-width: 1600px;
+    margin: auto;
+    padding: 28px 5%;
+}
+
+/* TOP */
+
+.topline {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 25px;
+}
+
+.back {
+    border: 1px solid #ffffff25;
+    background: #151b25;
+    color: white;
+    padding: 10px 18px;
+    font: 700 16px 'Rajdhani';
+    letter-spacing: 2px;
+    cursor: pointer;
+}
+
+.back:hover {
+    background: var(--orange);
+}
+
+.page-title {
+    font: 900 48px 'Barlow Condensed';
+    letter-spacing: 3px;
+}
+
+.page-title span {
+    color: var(--orange);
+}
+
+/* MAIN LAYOUT */
+
+.content {
+    display: grid;
+    grid-template-columns: 1fr 390px;
+    gap: 20px;
+    min-height: 620px;
+}
+
+/* LEFT COLLECTION */
+
+.collection {
+    background: #111720;
+    border: 1px solid #ffffff12;
+    padding: 22px;
+}
+
+.collection-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.collection-header h2 {
+    font: 800 27px 'Barlow Condensed';
+    letter-spacing: 2px;
+}
+
+.count {
+    color: var(--muted);
+    font-size: 15px;
+}
+
+/* GHOST CARDS */
+
+.ghost-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.ghost-card {
+    aspect-ratio: 1 / 1.15;
+    background: linear-gradient(145deg, #273342, #131b26);
+    border: 1px solid #ffffff20;
+    overflow: hidden;
+    cursor: pointer;
+    transition: .2s;
+}
+
+.ghost-card:hover {
+    transform: translateY(-4px);
+    border-color: #ffffff80;
+}
+
+.ghost-card.selected {
+    border: 2px solid var(--orange);
+}
+
+.ghost-card-image {
+    height: calc(100% - 40px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: radial-gradient(circle, #ffffff12, transparent 70%);
+}
+
+.ghost-card-image img {
+    width: 90%;
+    height: 90%;
+    object-fit: contain;
+}
+
+.ghost-card-name {
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #080d14;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+/* EMPTY COLLECTION */
+
+.empty-collection {
+    min-height: 480px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: #84909e;
+}
+
+.empty-icon {
+    font-size: 55px;
+    color: #ffffff20;
+    margin-bottom: 15px;
+}
+
+.empty-title {
+    font: 800 27px 'Barlow Condensed';
+    letter-spacing: 2px;
+    color: white;
+}
+
+.empty-description {
+    margin-top: 8px;
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+/* RIGHT DETAIL */
+
+.details {
+    background: #111720;
+    border: 1px solid #ffffff12;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.preview {
+    height: 390px;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    background:
+        radial-gradient(circle at center, #394b60 0%, #1b2735 45%, #111720 80%);
+}
+
+.preview::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+        linear-gradient(90deg, transparent 49.8%, #ffffff08 50%, transparent 50.2%),
+        linear-gradient(0deg, transparent 49.8%, #ffffff08 50%, transparent 50.2%);
+    background-size: 55px 55px;
+}
+
+.preview img {
+    position: relative;
+    z-index: 1;
+    width: 90%;
+    height: 90%;
+    object-fit: contain;
+}
+
+.preview-empty {
+    color: #ffffff25;
+    font: 900 95px 'Barlow Condensed';
+    letter-spacing: 5px;
+    position: relative;
+    z-index: 1;
+}
+
+.details-info {
+    padding: 22px;
+    text-align: center;
+}
+
+.detail-label {
+    color: var(--orange);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 3px;
+}
+
+.detail-name {
+    margin-top: 8px;
+    font: 900 38px 'Barlow Condensed';
+    letter-spacing: 3px;
+}
+
+.detail-description {
+    margin-top: 8px;
+    color: var(--muted);
+    font-size: 15px;
+}
+
+.equip {
+    margin: auto 20px 20px;
+    min-height: 48px;
+    border: 0;
+    background: var(--orange);
+    color: white;
+    font: 900 20px 'Barlow Condensed';
+    letter-spacing: 3px;
+    cursor: pointer;
+}
+
+.equip:disabled {
+    background: #27313d;
+    color: #74808d;
+    cursor: default;
+}
+
+/* RESPONSIVE */
+
+@media(max-width: 1050px) {
+    .content {
+        grid-template-columns: 1fr 320px;
+    }
+
+    .ghost-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+@media(max-width: 750px) {
+    header {
+        padding: 0 12px;
+    }
+
+    .logo {
+        font-size: 23px;
+    }
+
+    nav a {
+        padding: 0 7px;
+        font-size: 11px;
+    }
+
+    main {
+        padding: 20px 12px;
+    }
+
+    .content {
+        grid-template-columns: 1fr;
+    }
+
+    .ghost-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .details {
+        min-height: 550px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <div class="logo">FRONT<span>LINE</span></div>
+
+    <nav>
+        <a href="sammlung.html">GEISTER</a>
+        <a href="Override.html">OVERRIDE</a>
+        <a href="index.html">SPIELEN</a>
+    </nav>
+</header>
+
+<main>
+
+    <div class="topline">
+        <button class="back" onclick="location.href='lobby.html'">
+            ← ZURÜCK
+        </button>
+
+        <div class="page-title">GEISTER<span>.</span></div>
+    </div>
+
+    <div class="content">
+
+        <section class="collection">
+
+            <div class="collection-header">
+                <h2>MEINE GEISTER</h2>
+                <span class="count" id="count">0 GEISTER</span>
+            </div>
+
+            <div class="ghost-grid" id="ghostGrid"></div>
+
+            <div class="empty-collection" id="emptyCollection">
+                <div class="empty-icon">◇</div>
+                <div class="empty-title">NOCH KEINE GEISTER</div>
+                <div class="empty-description">
+                    Hier erscheinen deine gesammelten Geister.
+                    <br>
+                    Entdecke die Welt und erweitere deine Sammlung.
+                </div>
+            </div>
+
+        </section>
+
+        <aside class="details">
+
+            <div class="preview" id="preview">
+                <div class="preview-empty">?</div>
+            </div>
+
+            <div class="details-info">
+                <div class="detail-label">AUSGEWÄHLTER GEIST</div>
+                <div class="detail-name" id="detailName">KEIN GEIST</div>
+                <div class="detail-description" id="detailDescription">
+                    Wähle einen Geist aus deiner Sammlung.
+                </div>
+            </div>
+
+            <button class="equip" id="equipButton" disabled>
+                KEIN GEIST VERFÜGBAR
+            </button>
+
+        </aside>
+
+    </div>
+
+</main>
+
+<script>
+/*
+    Hier später deine tatsächlich gesammelten Geister laden.
+    Aktuell ist die Sammlung absichtlich leer.
+*/
+
+let ghosts = [];
+
+let selectedGhost = null;
+
+let equippedGhost =
+    localStorage.getItem("equippedGhost") || "";
+
+function renderCollection() {
+    const grid = document.getElementById("ghostGrid");
+    const empty = document.getElementById("emptyCollection");
+
+    grid.innerHTML = "";
+
+    document.getElementById("count").textContent =
+        ghosts.length + (ghosts.length === 1 ? " GEIST" : " GEISTER");
+
+    empty.style.display =
+        ghosts.length === 0 ? "flex" : "none";
+
+    ghosts.forEach(ghost => {
+        const card = document.createElement("div");
+
+        card.className = "ghost-card";
+
+        card.innerHTML = `
+            <div class="ghost-card-image">
+                <img src="${ghost.image}" alt="${ghost.name}">
+            </div>
+            <div class="ghost-card-name">${ghost.name}</div>
+        `;
+
+        card.addEventListener("click", () => {
+            selectedGhost = ghost;
+            renderCollection();
+            renderDetails();
+        });
+
+        if (selectedGhost && selectedGhost.id === ghost.id) {
+            card.classList.add("selected");
+        }
+
+        grid.appendChild(card);
+    });
+}
+
+function renderDetails() {
+    const preview = document.getElementById("preview");
+    const button = document.getElementById("equipButton");
+
+    if (!selectedGhost) {
+        preview.innerHTML =
+            '<div class="preview-empty">?</div>';
+
+        document.getElementById("detailName").textContent =
+            "KEIN GEIST";
+
+        document.getElementById("detailDescription").textContent =
+            "Wähle einen Geist aus deiner Sammlung.";
+
+        button.textContent = "KEIN GEIST VERFÜGBAR";
+        button.disabled = true;
+        return;
+    }
+
+    preview.innerHTML = `
+        <img src="${selectedGhost.image}" alt="${selectedGhost.name}">
+    `;
+
+    document.getElementById("detailName").textContent =
+        selectedGhost.name;
+
+    document.getElementById("detailDescription").textContent =
+        selectedGhost.description || "";
+
+    button.disabled = false;
+
+    if (equippedGhost === selectedGhost.id) {
+        button.textContent = "AUSGERÜSTET";
+        button.disabled = true;
+    } else {
+        button.textContent = "AUSRÜSTEN";
+    }
+}
+
+function equipGhost() {
+    if (!selectedGhost) return;
+
+    equippedGhost = selectedGhost.id;
+
+    localStorage.setItem("equippedGhost", equippedGhost);
+
+    renderDetails();
+}
+
+document.getElementById("equipButton").onclick = equipGhost;
+
+renderCollection();
+renderDetails();
+</script>
+
+</body>
+</html>
