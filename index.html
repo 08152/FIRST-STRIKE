@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FRONTLINE</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    background:
+        linear-gradient(rgba(5,8,13,.72), rgba(5,8,13,.92)),
+        url("https://images.unsplash.com/photo-1519608487953-e999c86e7455?auto=format&fit=crop&w=2400&q=90")
+        center/cover;
+    font-family: Arial, sans-serif;
+}
+
+h1 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: clamp(80px, 15vw, 180px);
+    font-weight: 900;
+    letter-spacing: 5px;
+    color: white;
+    line-height: .9;
+    text-align: center;
+    text-shadow: 0 10px 40px rgba(0,0,0,.5);
+}
+
+h1 span {
+    color: #ff542e;
+}
+
+button {
+    margin-top: 55px;
+    width: 260px;
+    height: 75px;
+    border: none;
+    background: #ff542e;
+    color: white;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 32px;
+    font-weight: 900;
+    letter-spacing: 5px;
+    cursor: pointer;
+    clip-path: polygon(0 0, 90% 0, 100% 25%, 100% 100%, 10% 100%, 0 75%);
+    transition: .25s;
+}
+
+button:hover {
+    background: #ff7658;
+    transform: scale(1.07);
+    box-shadow: 0 0 45px rgba(255,84,46,.45);
+}
+
+button:disabled {
+    opacity: .7;
+    cursor: wait;
+    transform: none;
+}
+
+</style>
+</head>
+
+<body>
+
+<h1>FRONT<span>LINE</span></h1>
+
+<button id="startButton" onclick="startGame()">START</button>
+
+<script>
+async function startGame() {
+    const button = document.getElementById("startButton");
+
+    button.disabled = true;
+    button.textContent = "CONNECTING...";
+
+    for (let i = 0; i < 30; i++) {
+        try {
+            const response = await fetch("/api/status", {
+                cache: "no-store"
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+
+                if (data.online) {
+                    sessionStorage.setItem("frontlineConnected", "true");
+                    window.location.href = "/lobby.html";
+                    return;
+                }
+            }
+        } catch (error) {}
+
+        await new Promise(resolve => setTimeout(resolve, 2000));
+    }
+
+    button.disabled = false;
+    button.textContent = "RETRY";
+    alert("Verbindung zum Server fehlgeschlagen.");
+}
+</script>
+
+</body>
+</html>
