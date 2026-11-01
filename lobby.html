@@ -20,14 +20,13 @@ body {
     overflow: hidden;
     color: white;
     font-family: 'Rajdhani', sans-serif;
+
     background:
-        linear-gradient(90deg, rgba(5,8,13,.88), rgba(5,8,13,.35)),
+        linear-gradient(90deg, rgba(5,8,13,.9), rgba(5,8,13,.35)),
         linear-gradient(0deg, #090c11, transparent 65%),
         url("https://images.unsplash.com/photo-1519608487953-e999c86e7455?auto=format&fit=crop&w=2400&q=90")
         center/cover no-repeat;
 }
-
-/* NAVIGATION */
 
 header {
     height: 85px;
@@ -93,8 +92,6 @@ nav a:hover::after {
     transform: scaleX(1);
 }
 
-/* HOME CONTENT */
-
 main {
     position: absolute;
     inset: 85px 0 0 0;
@@ -135,8 +132,6 @@ h1 span {
     letter-spacing: 1px;
 }
 
-/* PLAY BUTTON */
-
 .play-button {
     position: absolute;
     right: 45px;
@@ -151,7 +146,16 @@ h1 span {
     font-weight: 900;
     letter-spacing: 4px;
     cursor: pointer;
-    clip-path: polygon(0 0, 91% 0, 100% 25%, 100% 100%, 9% 100%, 0 75%);
+
+    clip-path: polygon(
+        0 0,
+        91% 0,
+        100% 25%,
+        100% 100%,
+        9% 100%,
+        0 75%
+    );
+
     transition: .25s;
 }
 
@@ -161,9 +165,8 @@ h1 span {
     box-shadow: 0 10px 40px rgba(255,84,46,.4);
 }
 
-/* MOBILE */
-
 @media(max-width: 650px) {
+
     header {
         padding: 0 15px;
     }
@@ -211,7 +214,7 @@ h1 span {
     <nav>
         <a href="sammlung.html">GEISTER</a>
         <a href="Override.html">OVERRIDE</a>
-        <a href="index.html">SPIELEN</a>
+        <a href="game.html">SPIELEN</a>
     </nav>
 
 </header>
@@ -220,7 +223,9 @@ h1 span {
 
     <div class="center-content">
 
-        <div class="eyebrow">WILLKOMMEN ZURÜCK</div>
+        <div class="eyebrow">
+            WILLKOMMEN ZURÜCK
+        </div>
 
         <h1>
             FRONT
@@ -233,7 +238,10 @@ h1 span {
 
     </div>
 
-    <button class="play-button" onclick="startGame()">
+    <button
+        class="play-button"
+        onclick="startGame()"
+    >
         SPIELEN →
     </button>
 
@@ -241,7 +249,7 @@ h1 span {
 
 <script>
 function startGame() {
-    window.location.href = "index.html";
+    window.location.href = "game.html";
 }
 </script>
 
